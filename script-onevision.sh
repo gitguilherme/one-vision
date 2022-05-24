@@ -20,7 +20,7 @@ which java
 if [ $? = 0 ]
 then echo "Já possui java instalado"
 else echo "Instalando java"
-sdk install java 11.0.12.7.1-amzn
+sudo apt install openjdk-11-jre -y
 fi
 echo "versão do instalada: "
 java -version
@@ -41,9 +41,24 @@ sudo systemctl start docker
 sudo systemctl enable docker
 
 
-echo "baixando mysql"
-sudo docker pull mysql:8.0.16
-echo "criando o banco de dados"
-sudo docker build -t onevision_img:1.0 .
-echo "executando mysql"
-sudo docker run -d -p 3306:3306 --name onevision onevision_img:1.0
+echo && echo "Criando Container Docker OneVision"
+read -p "Press Enter to continue ..."
+
+docker run -d -p 3310:3306 --name DBOneVision -e "MYSQL_DATABASE=onevision" -e "MYSQL_ROOT_PASSWORD=urubu100" -e "MYSQL_USER=userOneVision" -e "MYSQL_PASSWORD=urubu100" mysql
+
+echo "Aguarde 20 segundos..."
+sleep 20
+read -p "Press Enter to continue ..."
+
+docker exec -i DBOneVision sh -c 'exec mysql -u root -purubu100 onevision' <"onevision-oficial.sql"
+
+
+echo "Clonando o repositorio da aplicação OneVision."
+https://github.com/CarlosFelixxs/onevision-jar.git
+echo "Entrando no repositorio do projeto."
+cd onevision-jar
+echo "Executando o jar"
+chmod +x One-Vision-1.0-SNAPSHOT-jar-with-dependencies
+java -jar One-Vision-1.0-SNAPSHOT-jar-with-dependencies 
+echo "jar executado com sucesso."
+
